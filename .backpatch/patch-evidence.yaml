@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.0.7-backpatch-00002
+release: 5.0.7-backpatch-00003
 baseline: v5.0.6+backpatch.baseline
 fixes:
   - cve: CVE-2026-34950
@@ -18,12 +18,20 @@ fixes:
     basis: adapted
     artifacts:
       - fast-jwt
-    note: "New in this release; upstream's fix in 6.2.0, adapted to 5.0.6. It closes the advisory: fast-jwt: Cache Confusion via cacheKeyBuilder Collisions Can Return Claims From a Different Token (Identity/Authorization Mixup)."
+    note: "Carried from 5.0.7-backpatch-00002; upstream's fix in 6.2.0, adapted to 5.0.6. It closes the advisory: fast-jwt: Cache Confusion via cacheKeyBuilder Collisions Can Return Claims From a Different Token (Identity/Authorization Mixup)."
+  - cve: CVE-2026-35040
+    upstream_fix_url: https://github.com/nearform/fast-jwt/commit/18d25904e4617e8753526d1b3ab5a2cccdea726a
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-35040
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-fast-jwt/compare/4930d0a~1...469c465
+    basis: adapted
+    artifacts:
+      - fast-jwt
+    note: "New in this release; upstream's fix in 6.2.1 (18d2590, 8ab97d3), adapted to 5.0.6. It closes the advisory: fast-jwt: Stateful RegExp (/g or /y) causes non-deterministic allowed-claim validation (logical DoS)."
 tests:
-  commit: 12041ab94d4ce1b44dc9f17ece8a8c12a16a4174
+  commit: 469c465c36837a1e97a5e62bc5886ebe4e92116e
   command: npm ci --ignore-scripts with the lane's lockfile of the tag, npm pack --ignore-scripts at the tested commit, then node --test --test-reporter=junit on each test/*.spec.js of the tested commit against the packed package, and tsd; the per-file reports merged into one JUnit report
   runtime: Node.js v22.16.0, npm 11.4.2, tsd 0.31.2, macOS 27.2 arm64
-  report: fast-jwt-5.0.7-backpatch-00002-tests.zip
-  report_sha256: a0e5674d9ae008bea08ece767b96de803e43c66a9d313a6402f2576d81f4b1a5
+  report: fast-jwt-5.0.7-backpatch-00003-tests.zip
+  report_sha256: 6d8c863b4a1ff24e88c99be62530830f5ca7b05bb9bc497938321dd5d17ce274
   result: pass
-  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 251 tests, 251 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 71 tests, 70 passed, 1 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 71 tests, 71 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 7 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
+  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 270 tests, 270 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 90 tests, 77 passed, 13 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 90 tests, 90 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 7 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
