@@ -2133,3 +2133,10 @@ test('crit: throws on invalid allowedCritHeaders option (not an array)', t => {
     message: 'The allowedCritHeaders option must be an array of strings.'
   })
 })
+
+test('crit: throws on invalid allowedCritHeaders option (empty string)', t => {
+  t.assert.throws(() => createVerifier({ key: 'secret', allowedCritHeaders: [''] }), {
+    code: 'FAST_JWT_INVALID_OPTION',
+    message: 'The allowedCritHeaders option must be an array of strings.'
+  })
+})
