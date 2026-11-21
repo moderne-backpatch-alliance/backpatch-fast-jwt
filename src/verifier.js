@@ -4,6 +4,8 @@ const { createPublicKey, createSecretKey } = require('node:crypto')
 const { isRegExp } = require('node:util').types
 const Cache = require('mnemonist/lru-cache')
 
+const safeRegex = require('safe-regex2')
+
 const { hsAlgorithms, verifySignature, detectPublicKeyAlgorithms } = require('./crypto')
 const createDecoder = require('./decoder')
 const { TokenError } = require('./error')
@@ -43,6 +45,19 @@ function prepareKeyOrSecret(key, isSecret) {
 
 function isRegExpLike(value) {
   return isRegExp(value) || value instanceof RegExp
+}
+
+function checkForUnsafeRegExp(raw, optionName) {
+  const patterns = Array.isArray(raw) ? raw : [raw]
+  for (const r of patterns) {
+    if (r instanceof RegExp && !safeRegex(r)) {
+      process.emitWarning(
+        `The ${optionName} option contains an unsafe RegExp ${r} that may cause a ReDoS attack. Please review it. ` +
+          'See https://github.com/nearform/fast-jwt/security/advisories/GHSA-cjw9-ghj4-fwxf for details.',
+        { code: 'FAST_JWT_UNSAFE_REGEXP' }
+      )
+    }
+  }
 }
 
 function ensureStringClaimMatcher(raw) {
@@ -594,6 +609,12 @@ module.exports = function createVerifier(options) {
   }
 
   const allowedCritHeadersSet = new Set(allowedCritHeaders || [])
+
+  if (allowedJti) checkForUnsafeRegExp(allowedJti, 'allowedJti')
+  if (allowedAud) checkForUnsafeRegExp(allowedAud, 'allowedAud')
+  if (allowedIss) checkForUnsafeRegExp(allowedIss, 'allowedIss')
+  if (allowedSub) checkForUnsafeRegExp(allowedSub, 'allowedSub')
+  if (allowedNonce) checkForUnsafeRegExp(allowedNonce, 'allowedNonce')
 
   // Add validators
   const validators = []
