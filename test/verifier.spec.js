@@ -1748,3 +1748,70 @@ test('default errorCacheTTL should not cache errors when sub millisecond executi
 
   t.mock.timers.reset()
 })
+
+test('stateful RegExp /g flag must not cause non-deterministic claim validation - allowedAud', t => {
+  t.mock.timers.enable({ now: 100000 })
+  const sign = createSigner({ key: 'secret' })
+  const token = sign({ aud: 'admin', iss: 'issuer', sub: 'subject', jti: 'id-123', nonce: 'nonce-xyz' })
+  const verifier = createVerifier({ key: 'secret', allowedAud: /^admin$/g })
+
+  // All 8 successive calls with the same valid token must succeed
+  for (let i = 0; i < 8; i++) {
+    t.assert.doesNotThrow(() => verifier(token), `call ${i} should pass with /g flag on allowedAud`)
+  }
+})
+
+test('stateful RegExp /y flag must not cause non-deterministic claim validation - allowedAud', t => {
+  t.mock.timers.enable({ now: 100000 })
+  const sign = createSigner({ key: 'secret' })
+  const token = sign({ aud: 'admin', iss: 'issuer', sub: 'subject', jti: 'id-123', nonce: 'nonce-xyz' })
+  const verifier = createVerifier({ key: 'secret', allowedAud: /^admin$/y })
+
+  for (let i = 0; i < 8; i++) {
+    t.assert.doesNotThrow(() => verifier(token), `call ${i} should pass with /y flag on allowedAud`)
+  }
+})
+
+test('stateful RegExp /g flag must not cause non-deterministic claim validation - allowedIss', t => {
+  t.mock.timers.enable({ now: 100000 })
+  const sign = createSigner({ key: 'secret' })
+  const token = sign({ aud: 'admin', iss: 'issuer', sub: 'subject', jti: 'id-123', nonce: 'nonce-xyz' })
+  const verifier = createVerifier({ key: 'secret', allowedIss: /^issuer$/g })
+
+  for (let i = 0; i < 8; i++) {
+    t.assert.doesNotThrow(() => verifier(token), `call ${i} should pass with /g flag on allowedIss`)
+  }
+})
+
+test('stateful RegExp /g flag must not cause non-deterministic claim validation - allowedSub', t => {
+  t.mock.timers.enable({ now: 100000 })
+  const sign = createSigner({ key: 'secret' })
+  const token = sign({ aud: 'admin', iss: 'issuer', sub: 'subject', jti: 'id-123', nonce: 'nonce-xyz' })
+  const verifier = createVerifier({ key: 'secret', allowedSub: /^subject$/g })
+
+  for (let i = 0; i < 8; i++) {
+    t.assert.doesNotThrow(() => verifier(token), `call ${i} should pass with /g flag on allowedSub`)
+  }
+})
+
+test('stateful RegExp /g flag must not cause non-deterministic claim validation - allowedJti', t => {
+  t.mock.timers.enable({ now: 100000 })
+  const sign = createSigner({ key: 'secret' })
+  const token = sign({ aud: 'admin', iss: 'issuer', sub: 'subject', jti: 'id-123', nonce: 'nonce-xyz' })
+  const verifier = createVerifier({ key: 'secret', allowedJti: /^id-123$/g })
+
+  for (let i = 0; i < 8; i++) {
+    t.assert.doesNotThrow(() => verifier(token), `call ${i} should pass with /g flag on allowedJti`)
+  }
+})
+
+test('stateful RegExp /g flag must not cause non-deterministic claim validation - allowedNonce', t => {
+  t.mock.timers.enable({ now: 100000 })
+  const sign = createSigner({ key: 'secret' })
+  const token = sign({ aud: 'admin', iss: 'issuer', sub: 'subject', jti: 'id-123', nonce: 'nonce-xyz' })
+  const verifier = createVerifier({ key: 'secret', allowedNonce: /^nonce-xyz$/g })
+
+  for (let i = 0; i < 8; i++) {
+    t.assert.doesNotThrow(() => verifier(token), `call ${i} should pass with /g flag on allowedNonce`)
+  }
+})

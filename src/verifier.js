@@ -44,6 +44,15 @@ function ensureStringClaimMatcher(raw) {
   return raw
     .filter(r => r)
     .map(r => {
+      if (r instanceof RegExp) {
+        return {
+          test: v => {
+            r.lastIndex = 0
+            return r.test(v)
+          }
+        }
+      }
+
       if (r && typeof r.test === 'function') {
         return r
       }
