@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.0.7-backpatch-00007
+release: 5.0.7-backpatch-00008
 baseline: v5.0.6+backpatch.baseline
 fixes:
   - cve: CVE-2026-34950
@@ -58,12 +58,20 @@ fixes:
     basis: backport
     artifacts:
       - fast-jwt
-    note: "New in this release; upstream's fix in 6.3.1. createVerifier now rejects a missing or empty synchronous key unless the only allowed algorithm is \"none\"; as in upstream's fix, the earlier CVE-2026-44351 regression test for an empty key now expects that rejection when the verifier is built, not at verify time."
+    note: "Carried from 5.0.7-backpatch-00007; upstream's fix in 6.3.1. createVerifier now rejects a missing or empty synchronous key unless the only allowed algorithm is \"none\"; as in upstream's fix, the earlier CVE-2026-44351 regression test for an empty key now expects that rejection when the verifier is built, not at verify time."
+  - cve: CVE-2026-107721
+    upstream_fix_url: https://github.com/nearform/fast-jwt/commit/c0fb5b88b4c88ff2bdd194ca2c713599ad9e38b6
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-107721
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-fast-jwt/compare/b1fe705~1...2c65d05
+    basis: backport
+    artifacts:
+      - fast-jwt
+    note: "New in this release; upstream's fix in 6.3.0 (c0fb5b8, e4cbab3). It closes the advisory: fast-jwt clockTolerance: Infinity silently bypasses both exp and nbf validation (and persists in the verifier cache)."
 tests:
-  commit: fae28dee8a06ce43a336c5b9bbdbfbe305173f0b
+  commit: 2c65d05dd72179b30214ffa4e78490f5738b218b
   command: npm ci --ignore-scripts with the lane's lockfile of the tag, npm pack --ignore-scripts at the tested commit, then node --test --test-reporter=junit on each test/*.spec.js of the tested commit against the packed package, and tsd; the per-file reports merged into one JUnit report
   runtime: Node.js v22.16.0, npm 11.4.2, tsd 0.31.2, macOS 27.2 arm64
-  report: fast-jwt-5.0.7-backpatch-00007-tests.zip
-  report_sha256: 4a3467175bf255b6db6c412c0bb7bdffc7a799b59287b8396d0fe96ad02586ca
+  report: fast-jwt-5.0.7-backpatch-00008-tests.zip
+  report_sha256: 68188fc1b4b671feb0f45de9613b50fe704a49ffb7a1d5bc26687cd31ed26cae
   result: pass
-  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 339 tests, 339 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 159 tests, 129 passed, 30 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 159 tests, 159 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 5 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/error.js, src/index.d.ts, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
+  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 340 tests, 340 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 160 tests, 157 passed, 3 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 160 tests, 160 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 5 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/error.js, src/index.d.ts, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
