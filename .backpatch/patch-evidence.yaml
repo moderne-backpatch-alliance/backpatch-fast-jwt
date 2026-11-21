@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.0.7-backpatch-00004
+release: 5.0.7-backpatch-00005
 baseline: v5.0.6+backpatch.baseline
 fixes:
   - cve: CVE-2026-34950
@@ -34,12 +34,20 @@ fixes:
     basis: adapted
     artifacts:
       - fast-jwt
-    note: "New in this release; upstream's fix in 6.2.0 (80b49c7, 18d2590), adapted to 5.0.6. It closes the advisory: fast-jwt accepts unknown `crit` header extensions (RFC 7515 violation)."
+    note: "Carried from 5.0.7-backpatch-00004; upstream's fix in 6.2.0 (80b49c7, 18d2590), adapted to 5.0.6. It closes the advisory: fast-jwt accepts unknown `crit` header extensions (RFC 7515 violation)."
+  - cve: CVE-2026-44351
+    upstream_fix_url: https://github.com/nearform/fast-jwt/commit/4e5b5708b6a9bfa5b06b5b10f888084b754c740d
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-44351
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-fast-jwt/commit/6a74e82
+    basis: backport
+    artifacts:
+      - fast-jwt
+    note: "New in this release; upstream's fix in 6.2.4. It closes the advisory: fast-jwt: JWT auth bypass due to empty HMAC secret accepted by async key resolver."
 tests:
-  commit: 709232c313d6e6bf22e9617a46ddf6814e0cddad
+  commit: 6a74e828b88dacd057fddbfffe74a45f0f4afff4
   command: npm ci --ignore-scripts with the lane's lockfile of the tag, npm pack --ignore-scripts at the tested commit, then node --test --test-reporter=junit on each test/*.spec.js of the tested commit against the packed package, and tsd; the per-file reports merged into one JUnit report
   runtime: Node.js v22.16.0, npm 11.4.2, tsd 0.31.2, macOS 27.2 arm64
-  report: fast-jwt-5.0.7-backpatch-00004-tests.zip
-  report_sha256: a6935b84dbe77c9d4644a46ed537768687788b3a42bc585160a3faf1c27ac329
+  report: fast-jwt-5.0.7-backpatch-00005-tests.zip
+  report_sha256: e26b850edbc5f6c3a102efa10bb9fed06c98788b14584b939c310794d2bf7143
   result: pass
-  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 279 tests, 279 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 99 tests, 92 passed, 7 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 99 tests, 99 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 5 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/error.js, src/index.d.ts, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
+  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 291 tests, 291 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 111 tests, 103 passed, 8 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 111 tests, 111 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 5 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/error.js, src/index.d.ts, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
