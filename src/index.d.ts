@@ -32,6 +32,7 @@ export type TokenValidationErrorCode =
   | 'FAST_JWT_VERIFY_ERROR'
   | 'FAST_JWT_MISSING_REQUIRED_CLAIM'
   | 'FAST_JWT_MISSING_SIGNATURE'
+  | 'FAST_JWT_INVALID_CRIT_HEADER'
 
 declare class TokenError extends Error {
   static wrap(originalError: Error, code: TokenValidationErrorCode, message: string): TokenError
@@ -53,6 +54,7 @@ declare class TokenError extends Error {
     verifyError: 'FAST_JWT_VERIFY_ERROR'
     missingRequiredClaim: 'FAST_JWT_MISSING_REQUIRED_CLAIM'
     missingSignature: 'FAST_JWT_MISSING_SIGNATURE'
+    invalidCritHeader: 'FAST_JWT_INVALID_CRIT_HEADER'
   }
 
   code: TokenValidationErrorCode;
@@ -140,6 +142,7 @@ export interface VerifierOptions {
   clockTolerance?: number
   requiredClaims?: Array<string>
   checkTyp?: string
+  allowedCritHeaders?: Array<string>
   cacheKeyBuilder?: (token: string) => string
 }
 
