@@ -1,6 +1,7 @@
 'use strict'
 
 const { createPublicKey, createSecretKey } = require('node:crypto')
+const { isRegExp } = require('node:util').types
 const Cache = require('mnemonist/lru-cache')
 
 const { hsAlgorithms, verifySignature, detectPublicKeyAlgorithms } = require('./crypto')
@@ -36,6 +37,10 @@ function prepareKeyOrSecret(key, isSecret) {
   return isSecret ? createSecretKey(key) : createPublicKey(key)
 }
 
+function isRegExpLike(value) {
+  return isRegExp(value) || value instanceof RegExp
+}
+
 function ensureStringClaimMatcher(raw) {
   if (!Array.isArray(raw)) {
     raw = [raw]
@@ -44,10 +49,15 @@ function ensureStringClaimMatcher(raw) {
   return raw
     .filter(r => r)
     .map(r => {
-      if (r instanceof RegExp) {
+      if (isRegExpLike(r)) {
         return {
           test: v => {
-            r.lastIndex = 0
+            try {
+              r.lastIndex = 0
+            } catch {
+              // A matcher can refuse the write, whether it is frozen or guarded by an accessor or a
+              // Proxy trap. It cannot be reset, so let test() decide the outcome rather than throwing.
+            }
             return r.test(v)
           }
         }
