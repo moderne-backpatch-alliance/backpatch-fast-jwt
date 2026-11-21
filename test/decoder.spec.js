@@ -83,4 +83,10 @@ test('payload must be a JSON object', t => {
       message: 'The payload must be an object'
     }
   )
+
+  // array - typeof [] === 'object', so this must be rejected explicitly
+  const arrayPayloadToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${Buffer.from('["a","b"]').toString('base64url')}.x`
+  t.assert.throws(() => defaultDecoder(arrayPayloadToken), {
+    message: 'The payload must be an object'
+  })
 })
