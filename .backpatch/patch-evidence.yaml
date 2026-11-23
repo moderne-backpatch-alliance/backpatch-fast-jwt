@@ -1,6 +1,6 @@
 schema: osera-patch-evidence/0.1.0
 producer: moderne
-release: 5.0.7-backpatch-00010
+release: 5.0.7-backpatch-00011
 baseline: v5.0.6+backpatch.baseline
 fixes:
   - cve: CVE-2026-34950
@@ -82,12 +82,20 @@ fixes:
     basis: adapted
     artifacts:
       - fast-jwt
-    note: "New in this release; upstream's fix in 6.2.1, adapted to 5.0.6. It closes the advisory: fast-jwt has a ReDoS when using RegExp in allowed* leading to CPU exhaustion during token verification. This release adds a new runtime dependency, as upstream's fix does: package.json now requires safe-regex2 ^5.1.0, so installing it pulls safe-regex2 and its dependency ret from the registry, which offline mirrors and strict allow lists must carry. The verifier uses it to warn when an allowed* option holds a RegExp that safe-regex2 flags as unsafe."
+    note: "Carried from 5.0.7-backpatch-00010; upstream's fix in 6.2.1, adapted to 5.0.6. It closes the advisory: fast-jwt has a ReDoS when using RegExp in allowed* leading to CPU exhaustion during token verification. This release adds a new runtime dependency, as upstream's fix does: package.json now requires safe-regex2 ^5.1.0, so installing it pulls safe-regex2 and its dependency ret from the registry, which offline mirrors and strict allow lists must carry. The verifier uses it to warn when an allowed* option holds a RegExp that safe-regex2 flags as unsafe."
+  - cve: CVE-2026-35041
+    upstream_fix_url: https://github.com/nearform/fast-jwt/commit/b0be0ca161593836a153d5180ca5358ad9b5de94
+    advisory_url: https://nvd.nist.gov/vuln/detail/CVE-2026-35041
+    patch_commit_url: https://github.com/moderne-backpatch-alliance/backpatch-fast-jwt/compare/55ab2d3~1...8ad095c
+    basis: adapted
+    artifacts:
+      - fast-jwt
+    note: "New in this release; completes upstream's fix in 6.2.1 (b0be0ca1), adapted to 5.0.6. It adds the isRegExpLike check of upstream's cross-realm repair in 6.3.3 (8ab97d3c), so an unsafe RegExp from another realm also gets the warning, where 5.0.7-backpatch-00010 checked instanceof RegExp. It also runs the checks before the allowedCritHeaders validation, where upstream's fix puts them, so a configuration that validation rejects still gets the warning first. It closes the advisory: fast-jwt has a ReDoS when using RegExp in allowed* leading to CPU exhaustion during token verification. This release adds a new runtime dependency, as upstream's fix does: package.json now requires safe-regex2 ^5.1.0, so installing it pulls safe-regex2 and its dependency ret from the registry, which offline mirrors and strict allow lists must carry. The verifier uses it to warn when an allowed* option holds a RegExp that safe-regex2 flags as unsafe."
 tests:
-  commit: d4d465792f1235b7efa07cd691ce407f9e7c702f
+  commit: 8ad095cf7461f07e13632a6ff44cf0e882862176
   command: npm ci --ignore-scripts with the lane's lockfile of the tag, npm pack --ignore-scripts at the tested commit, then node --test --test-reporter=junit on each test/*.spec.js of the tested commit against the packed package, and tsd; the per-file reports merged into one JUnit report
   runtime: Node.js v22.16.0, npm 11.4.2, tsd 0.31.2, macOS 27.2 arm64
-  report: fast-jwt-5.0.7-backpatch-00010-tests.zip
-  report_sha256: d2f6cd989bcac7c09a3d7db9206ce8f527ba649015b32d335f17fae6c780a09f
+  report: fast-jwt-5.0.7-backpatch-00011-tests.zip
+  report_sha256: 182d4332cd2c1b904034584ca7fc0d92fab106bde7f9a3d1efb73beafa3ae7fe
   result: pass
-  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 351 tests, 351 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 171 tests, 163 passed, 8 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 171 tests, 171 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 4 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/decoder.js, src/error.js, src/index.d.ts, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
+  note: "upstream's test script (node --test on each test/*.spec.js, then tsd), on the packed package with the tested commit's test/ and benchmarks/keys at the tested commit: 353 tests, 353 passed, 0 failed, 0 skipped. The tag ships no lockfile; dev dependencies are the lane's lockfile of the tag (npm ci), with npmjs 5.0.6's installed runtime dependencies laid over them. The CVE tests (test/verifier.spec.js), with this release's production lines reverted at the tested commit: 173 tests, 171 passed, 2 failed, 0 skipped, test files exiting non-zero: test/verifier.spec.js; with them: 173 tests, 173 passed, 0 failed, 0 skipped. Built with npm pack (no build step) in a directory named fast-jwt, 4 of npmjs's 11 files for 5.0.6 are identical; the rest are README.md, package.json, src/crypto.js, src/decoder.js, src/error.js, src/index.d.ts, src/verifier.js. The archive's file-origins.yaml maps each packaged file to the commit, or names its inputs and build."
