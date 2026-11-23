@@ -589,6 +589,12 @@ module.exports = function createVerifier(options) {
     throw new TokenError(TokenError.codes.invalidOption, 'The requiredClaims option must be an array.')
   }
 
+  if (allowedJti) checkForUnsafeRegExp(allowedJti, 'allowedJti')
+  if (allowedAud) checkForUnsafeRegExp(allowedAud, 'allowedAud')
+  if (allowedIss) checkForUnsafeRegExp(allowedIss, 'allowedIss')
+  if (allowedSub) checkForUnsafeRegExp(allowedSub, 'allowedSub')
+  if (allowedNonce) checkForUnsafeRegExp(allowedNonce, 'allowedNonce')
+
   const cache = createCache(cacheSize)
 
   if (cache && options?.cacheKeyBuilder) {
@@ -609,12 +615,6 @@ module.exports = function createVerifier(options) {
   }
 
   const allowedCritHeadersSet = new Set(allowedCritHeaders || [])
-
-  if (allowedJti) checkForUnsafeRegExp(allowedJti, 'allowedJti')
-  if (allowedAud) checkForUnsafeRegExp(allowedAud, 'allowedAud')
-  if (allowedIss) checkForUnsafeRegExp(allowedIss, 'allowedIss')
-  if (allowedSub) checkForUnsafeRegExp(allowedSub, 'allowedSub')
-  if (allowedNonce) checkForUnsafeRegExp(allowedNonce, 'allowedNonce')
 
   // Add validators
   const validators = []

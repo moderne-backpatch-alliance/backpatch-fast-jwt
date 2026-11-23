@@ -2854,6 +2854,15 @@ test('createVerifier emits FAST_JWT_UNSAFE_REGEXP warning for unsafe RegExp in a
   t.assert.ok(w.message.includes('https://'), 'warning should include an advisory link')
 })
 
+test('createVerifier warns on an unsafe RegExp before rejecting an invalid allowedCritHeaders', async t => {
+  const w = await captureWarning('FAST_JWT_UNSAFE_REGEXP', () =>
+    t.assert.throws(() => createVerifier({ key: 'secret', allowedAud: /^(a+)+X$/, allowedCritHeaders: [''] }), {
+      message: 'The allowedCritHeaders option must be an array of strings.'
+    })
+  )
+  t.assert.ok(w.message.includes('allowedAud'))
+})
+
 test('createVerifier emits FAST_JWT_UNSAFE_REGEXP warning for unsafe RegExp in allowedIss', async t => {
   const w = await captureWarning('FAST_JWT_UNSAFE_REGEXP', () =>
     createVerifier({ key: 'secret', allowedIss: /^(a+)+X$/ })
