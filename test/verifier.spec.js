@@ -2155,6 +2155,15 @@ describe('cross-realm and duck-typed RegExp matchers', () => {
     }
   })
 
+  test('emits FAST_JWT_UNSAFE_REGEXP warning for an unsafe cross-realm RegExp in allowedAud', async t => {
+    const crossRealmRegExp = vm.runInNewContext('/^(a+)+X$/')
+    const w = await captureWarning('FAST_JWT_UNSAFE_REGEXP', () =>
+      createVerifier({ key: 'secret', allowedAud: crossRealmRegExp })
+    )
+    t.assert.equal(w.code, 'FAST_JWT_UNSAFE_REGEXP')
+    t.assert.ok(w.message.includes('allowedAud'))
+  })
+
   test('a plain duck-typed matcher object is used as-is', t => {
     t.mock.timers.enable({ now: 100000 })
     const sign = createSigner({ key: 'secret' })
